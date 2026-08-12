@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "LUNIKO"
+description = "A polished, responsive creative companion website for growing minds, with an interactive guided spark demo and clear paths into the LUNIKO experience."
+version = "1.0.0"
+id = "artifacts/luniko"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24705
+
+[services.development]
+run = "pnpm --filter @workspace/luniko run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/luniko", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/luniko/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24705"
+BASE_PATH = "/"
