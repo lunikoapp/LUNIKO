@@ -43,7 +43,12 @@ jobs:
           BASE_PATH: /${{ github.event.repository.name }}/
 
       - name: Preserve SPA routes
-        run: cp artifacts/luniko/dist/public/index.html artifacts/luniko/dist/public/404.html
+        run: |
+          cp artifacts/luniko/dist/public/index.html artifacts/luniko/dist/public/404.html
+          for route in demo about how-to cookies roadmap brand login dashboard; do
+            mkdir -p "artifacts/luniko/dist/public/${route}"
+            cp artifacts/luniko/dist/public/index.html "artifacts/luniko/dist/public/${route}/index.html"
+          done
 
       - name: Verify Pages bundle
         env:
@@ -53,6 +58,9 @@ jobs:
           test -s artifacts/luniko/dist/public/404.html
           grep -Fq "src=\"${PAGES_BASE_PATH}" artifacts/luniko/dist/public/index.html
           grep -Fq "href=\"${PAGES_BASE_PATH}" artifacts/luniko/dist/public/index.html
+          for route in demo about how-to cookies roadmap brand login dashboard; do
+            test -s "artifacts/luniko/dist/public/${route}/index.html"
+          done
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
