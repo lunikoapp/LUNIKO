@@ -40,7 +40,7 @@ jobs:
         run: pnpm --filter @workspace/luniko run build
         env:
           PORT: 4173
-          BASE_PATH: /${{ github.event.repository.name }}/
+          BASE_PATH: /
 
       - name: Preserve SPA routes
         run: |
@@ -52,7 +52,7 @@ jobs:
 
       - name: Verify Pages bundle
         env:
-          PAGES_BASE_PATH: /${{ github.event.repository.name }}/
+          PAGES_BASE_PATH: /
         run: |
           test -s artifacts/luniko/dist/public/index.html
           test -s artifacts/luniko/dist/public/404.html
