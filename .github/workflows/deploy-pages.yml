@@ -1,0 +1,82 @@
+name: Deploy LUNIKO to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build LUNIKO
+        run: pnpm --filter @workspace/luniko run build
+        env:
+          PORT: 4173
+          BASE_PATH: /${{ github.event.repository.name }}/
+
+      - name: Preserve SPA routes
+        run: |
+          cp artifacts/luniko/dist/public/index.html artifacts/luniko/dist/public/404.html
+          for route in demo about how-to cookies roadmap brand login dashboard; do
+            mkdir -p "artifacts/luniko/dist/public/${route}"
+            cp artifacts/luniko/dist/public/index.html "artifacts/luniko/dist/public/${route}/index.html"
+          done
+
+      - name: Verify Pages bundle
+        env:
+          PAGES_BASE_PATH: /${{ github.event.repository.name }}/
+        run: |
+          test -s artifacts/luniko/dist/public/index.html
+          test -s artifacts/luniko/dist/public/404.html
+          grep -Fq "src=\"${PAGES_BASE_PATH}" artifacts/luniko/dist/public/index.html
+          grep -Fq "href=\"${PAGES_BASE_PATH}" artifacts/luniko/dist/public/index.html
+          for route in demo about how-to cookies roadmap brand login dashboard; do
+            test -s "artifacts/luniko/dist/public/${route}/index.html"
+          done
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: artifacts/luniko/dist/public
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
