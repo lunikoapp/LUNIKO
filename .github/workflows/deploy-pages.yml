@@ -40,10 +40,19 @@ jobs:
         run: pnpm --filter @workspace/luniko run build
         env:
           PORT: 4173
-          BASE_PATH: /LUNIKO/
+          BASE_PATH: /${{ github.event.repository.name }}/
 
       - name: Preserve SPA routes
         run: cp artifacts/luniko/dist/public/index.html artifacts/luniko/dist/public/404.html
+
+      - name: Verify Pages bundle
+        env:
+          PAGES_BASE_PATH: /${{ github.event.repository.name }}/
+        run: |
+          test -s artifacts/luniko/dist/public/index.html
+          test -s artifacts/luniko/dist/public/404.html
+          grep -Fq "src=\"${PAGES_BASE_PATH}" artifacts/luniko/dist/public/index.html
+          grep -Fq "href=\"${PAGES_BASE_PATH}" artifacts/luniko/dist/public/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
