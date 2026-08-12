@@ -59,11 +59,11 @@ function Mark({ small = false, inverse = false }: { small?: boolean; inverse?: b
   const signal = '#C9F22D';
   return (
     <span className={`inline-flex items-center gap-2 ${small ? 'scale-[.82] origin-left' : ''}`} aria-label="LUNIKO">
-      <svg width="35" height="35" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <circle cx="20" cy="20" r="6.5" fill={signal} />
-        <ellipse cx="20" cy="20" rx="16" ry="7.5" stroke={ink} strokeWidth="1.6" transform="rotate(-27 20 20)" />
-        <ellipse cx="20" cy="20" rx="16" ry="7.5" stroke={ink} strokeWidth="1.6" transform="rotate(53 20 20)" />
-        <circle cx="33.2" cy="12.4" r="2.1" fill={ink} />
+      <svg width="35" height="35" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+        <path d="M8.2 25.8C5.8 18.1 11.7 9.7 20.8 7.4C29.5 5.2 38.2 9.2 39.7 16.2" stroke={ink} strokeWidth="1.7" strokeLinecap="round" />
+        <path d="M35.8 18.2C38.2 25.9 32.3 34.3 23.2 36.6C14.5 38.8 5.8 34.8 4.3 27.8" stroke={ink} strokeWidth="1.7" strokeLinecap="round" />
+        <path d="M22 11.8L24.8 19.2L32.2 22L24.8 24.8L22 32.2L19.2 24.8L11.8 22L19.2 19.2L22 11.8Z" fill={signal} />
+        <circle cx="35.2" cy="10.2" r="2.3" fill={ink} />
       </svg>
       <span className="display text-[1.65rem] font-bold tracking-[-.08em]">LUNIKO</span>
     </span>
