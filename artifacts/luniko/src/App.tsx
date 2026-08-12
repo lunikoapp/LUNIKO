@@ -38,6 +38,96 @@ const navItems = [
   { label: 'Roadmap', href: '/roadmap' },
 ];
 
+type SeoData = {
+  title: string;
+  description: string;
+  robots?: string;
+};
+
+const seoByPath: Record<string, SeoData> = {
+  '/': {
+    title: 'Luniko — Creative Learning Companion',
+    description: 'Luniko is a creative learning companion for young learners, parents, and educators—helping turn everyday questions into thoughtful, open-ended discovery.',
+  },
+  '/demo': {
+    title: 'Try Luniko — A Creative Learning Companion',
+    description: 'Try a guided Luniko spark and give one open-ended question enough room to become your own.',
+  },
+  '/about': {
+    title: 'About Luniko — Tools for Curious Minds',
+    description: 'Meet the studio behind Luniko, a thoughtful learning companion made for curiosity, connection, and growing minds.',
+  },
+  '/how-to': {
+    title: 'How Luniko Works — Follow the Good Question',
+    description: 'Learn how Luniko helps young learners notice, wander, and make something from the questions that catch their attention.',
+  },
+  '/roadmap': {
+    title: 'Luniko Roadmap — Built Slowly, Together',
+    description: 'See what Luniko is listening for, making next, and leaving space to discover with families, teachers, and young thinkers.',
+  },
+  '/login': {
+    title: 'Join Luniko — Make Room for Wonder',
+    description: 'Leave a note to hear when Luniko spaces open for young learners, parents, and educators.',
+    robots: 'noindex, follow',
+  },
+  '*': {
+    title: 'Page Not Found — Luniko',
+    description: 'This Luniko page wandered somewhere interesting.',
+    robots: 'noindex, nofollow',
+  },
+};
+
+function setMeta(name: string, content: string) {
+  let element = document.head.querySelector(`meta[name="${name}"]`);
+  if (!element) {
+    element = document.createElement('meta');
+    element.setAttribute('name', name);
+    document.head.appendChild(element);
+  }
+  element.setAttribute('content', content);
+}
+
+function setPropertyMeta(property: string, content: string) {
+  let element = document.head.querySelector(`meta[property="${property}"]`);
+  if (!element) {
+    element = document.createElement('meta');
+    element.setAttribute('property', property);
+    document.head.appendChild(element);
+  }
+  element.setAttribute('content', content);
+}
+
+function Seo() {
+  const [location] = useLocation();
+
+  useEffect(() => {
+    const path = location.replace(/\/+$/, '') || '/';
+    const seo = seoByPath[path] ?? seoByPath['*'];
+    const canonicalPath = path === '/' ? '/' : `${path}/`;
+    const canonicalUrl = `https://luniko.org${canonicalPath}`;
+
+    document.title = seo.title;
+    setMeta('description', seo.description);
+    setMeta('robots', seo.robots ?? 'index, follow');
+    setPropertyMeta('og:title', seo.title);
+    setPropertyMeta('og:description', seo.description);
+    setPropertyMeta('og:url', canonicalUrl);
+    setPropertyMeta('og:type', 'website');
+    setMeta('twitter:title', seo.title);
+    setMeta('twitter:description', seo.description);
+
+    let canonical = document.head.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', canonicalUrl);
+  }, [location]);
+
+  return null;
+}
+
 function Reveal({ children, className = '' }: { children: ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -491,6 +581,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+          <Seo />
           <Router />
         </WouterRouter>
         <Toaster />

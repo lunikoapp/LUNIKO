@@ -1,6 +1,7 @@
 {
   "name": "LUNIKO — Creative Learning Companion",
   "short_name": "LUNIKO",
+  "id": "/",
   "description": "A safe creative learning companion for young learners, parents, and educators.",
   "start_url": "/",
   "scope": "/",
