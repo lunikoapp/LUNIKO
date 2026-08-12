@@ -1,0 +1,24 @@
+{
+  "name": "LUNIKO — Creative Learning Companion",
+  "short_name": "LUNIKO",
+  "description": "A safe creative learning companion for young learners, parents, and educators.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6ecd9",
+  "theme_color": "#292641",
+  "lang": "en-US",
+  "icons": [
+    {
+      "src": "/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

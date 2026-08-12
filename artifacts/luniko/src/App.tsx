@@ -40,11 +40,38 @@ function readStorage<T>(key: string, fallback: T): T {
 function saveStorage<T>(key: string, value: T) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* static demo */ }
 }
-function setMeta(title: string, description: string) {
+const SITE_URL = 'https://luniko.org';
+const OG_IMAGE_URL = `${SITE_URL}/og-image.png`;
+
+function setMetaTag(attribute: 'name' | 'property', key: string, content: string) {
+  let tag = document.head.querySelector(`meta[${attribute}="${key}"]`) as HTMLMetaElement | null;
+  if (!tag) {
+    tag = document.createElement('meta');
+    tag.setAttribute(attribute, key);
+    document.head.appendChild(tag);
+  }
+  tag.setAttribute('content', content);
+}
+
+function setMeta(title: string, description: string, location: string) {
   document.title = `${title} | LUNIKO`;
-  let tag = document.querySelector('meta[name="description"]');
-  if (!tag) { tag = document.createElement('meta'); tag.setAttribute('name', 'description'); document.head.appendChild(tag); }
-  tag.setAttribute('content', description);
+  const pagePath = location === '/' ? '/' : `/${location.replace(/^\/+|\/+$/g, '')}/`;
+  const canonicalUrl = `${SITE_URL}${pagePath}`;
+  setMetaTag('name', 'description', description);
+  setMetaTag('property', 'og:title', `${title} | LUNIKO`);
+  setMetaTag('property', 'og:description', description);
+  setMetaTag('property', 'og:url', canonicalUrl);
+  setMetaTag('property', 'og:image', OG_IMAGE_URL);
+  setMetaTag('name', 'twitter:title', `${title} | LUNIKO`);
+  setMetaTag('name', 'twitter:description', description);
+  setMetaTag('name', 'twitter:image', OG_IMAGE_URL);
+  let canonical = document.head.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+  if (!canonical) {
+    canonical = document.createElement('link');
+    canonical.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonical);
+  }
+  canonical.href = canonicalUrl;
 }
 
 const navItems = [
@@ -132,7 +159,7 @@ function PageFrame({ children, dark = false }: { children: ReactNode; dark?: boo
       '/login': ['Enter your space', 'Sign in to your local LUNIKO demo space.'],
       '/dashboard': ['Your LUNIKO space', 'Review recent sessions, saved sparks, preferences, and wallet status.'],
     };
-    setMeta(...(meta[location] || ['Page not found', 'This LUNIKO page does not exist.']));
+    setMeta(...(meta[location] || ['Page not found', 'This LUNIKO page does not exist.']), location);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location]);
   return <div className={`grain min-h-[100dvh] ${dark ? 'bg-[#292641] text-[#f8ebd2]' : 'bg-[#f6ecd9] text-[#292641]'}`}><Header />{children}<Footer /></div>;
